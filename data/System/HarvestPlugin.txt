@@ -1,0 +1,43 @@
+%META:TOPICINFO{author="ProjectContributor" comment="reprev" date="1338285366" format="1.1" reprev="2" version="2"}%
+---+!! %TOPIC%
+
+This plugin can be used to download and archive external resource, like images or pdfs.
+It expects an url, analyzes it and offers a menu of links to all resources reachable from that page.
+
+Upon selection it, download and attach all resources to the current topic for local use.
+
+You'll enter the harvest process using the =harvestplugin= template like this
+
+%SCRIPTURL{"view"}%/%WEB%/%TOPIC%?template=harvesplugin
+
+This plugin is best integrated in [[Foswiki:Extensions/NatSkin][NatSkin's]] menu concept. For now, you'll
+have to modify your local !PatternSkin to add this tool to your site.
+
+---++ Screenshots
+
+<a href="%ATTACHURLPATH%/HarvestPluginSnap1.png"><img src="%ATTACHURLPATH%/HarvestPluginSnap1.png" width="100" /></a>
+<a href="%ATTACHURLPATH%/HarvestPluginSnap2.png"><img src="%ATTACHURLPATH%/HarvestPluginSnap2.png" width="100" /></a>
+<a href="%ATTACHURLPATH%/HarvestPluginSnap3.png"><img src="%ATTACHURLPATH%/HarvestPluginSnap3.png" width="100"  /></a>
+
+---++ Installation Instructions
+
+%$INSTALL_INSTRUCTIONS%
+
+---++ Info
+<!--
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
+-->
+
+|  Author(s): | Michael Daum|
+|  Copyright: | &copy; 2012 Michael Daum http://michaeldaumconsulting.com |
+|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
+|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  Dependencies: | %$DEPENDENCIES% |
+|  Home page: | Foswiki:Extensions/%TOPIC% |
+|  Support: | Foswiki:Support/%TOPIC% |
+
+%META:FILEATTACHMENT{name="HarvestPluginSnap3.png" attachment="HarvestPluginSnap3.png" attr="" comment="" date="1338285037" size="101095" user="ProjectContributor" version="1"}%
+%META:FILEATTACHMENT{name="HarvestPluginSnap2.png" attachment="HarvestPluginSnap2.png" attr="" comment="" date="1338285038" size="51494" user="ProjectContributor" version="1"}%
+%META:FILEATTACHMENT{name="HarvestPluginSnap1.png" attachment="HarvestPluginSnap1.png" attr="" comment="" date="1338285039" size="43468" user="ProjectContributor" version="1"}%

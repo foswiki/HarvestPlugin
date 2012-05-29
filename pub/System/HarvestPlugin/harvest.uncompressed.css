@@ -1,0 +1,36 @@
+#analyzeForm_url {
+  width:99%;
+}
+#analyzeForm .foswikiFormDescription {
+  margin-bottom:1.3846em; /* 18px */
+}
+#messageContainer,
+#downloadForm {
+  display:none;
+}
+.natRevision {
+  display:none;
+}
+.harvestResults {
+  width:99%;
+}
+.harvestResults td {
+  padding:5px;
+}
+.harvestResults input {
+  visibility:hidden;
+}
+.harvestResults tr:hover input,
+.harvestResults tr.selected input {
+  visibility:visible;
+}
+.harvestResults tr:hover td {
+  background-color:#EFECEB;
+}
+.harvestResults tr.selected td {
+  background-color:#FBE3E4;
+  color:#764546;
+}
+.harvestResults tr:hover.selected td {
+  background-color:#EBCBCD;
+}

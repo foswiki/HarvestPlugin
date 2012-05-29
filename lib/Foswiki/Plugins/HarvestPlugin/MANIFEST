@@ -1,0 +1,12 @@
+data/System/HarvestPlugin.txt 0644
+lib/Foswiki/Plugins/HarvestPlugin/Config.spec 0644
+lib/Foswiki/Plugins/HarvestPlugin/Core.pm 0644
+lib/Foswiki/Plugins/HarvestPlugin.pm 0644
+pub/System/HarvestPlugin/harvest.css 0644
+pub/System/HarvestPlugin/harvest.css.gz 0644
+pub/System/HarvestPlugin/harvest.js 0644
+pub/System/HarvestPlugin/harvest.js.gz 0644
+pub/System/HarvestPlugin/harvest.uncompressed.css 0644
+pub/System/HarvestPlugin/harvest.uncompressed.js 0644
+pub/System/HarvestPlugin/Makefile 0644
+templates/harvestplugin.tmpl 0644

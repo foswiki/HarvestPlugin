@@ -1,0 +1,145 @@
+%TMPL:INCLUDE{"view"}%
+
+%TMPL:DEF{"titleaction"}%%MAKETEXT{"download"}%%TMPL:END%
+%TMPL:DEF{"topicactions"}%%TMPL:END%
+%TMPL:DEF{"heading"}%<h1 >%MAKETEXT{"Download and archive external resources"}%</h1>%TMPL:END%
+%TMPL:DEF{"breadcrumbs::tail"}%%TMPL:P{"sep"}%<a href="%SCRIPTURLPATH{"view"}%/%BASEWEB%/%BASETOPIC%?%QUERYSTRING%">%MAKETEXT{"Download"}%</a>%TMPL:END%
+
+%TMPL:DEF{"content"}%<!-- -->
+%TMPL:P{"heading"}%
+%TMPL:P{"analyzeform"}%
+%TMPL:P{"downloadform"}%
+%TMPL:P{"jquerytemplates"}%
+%JQREQUIRE{"pnotify, blockui, form, tooltip, tmpl"}%<!-- -->
+%ADDTOZONE{
+  "head" 
+  text="<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.css'  media='all' />" 
+  id="HARVESTPLUGIN::CSS"
+}%<!-- -->
+%ADDTOZONE{
+  "script"
+  text="<script src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
+  id="HARVESTPLUGIN::JS"
+  requires="JQUERYPLUGIN::PNOTIFY, JQUERYPLUGIN::BLOCKUI, JQUERYPLUGIN::TOOLTIP, JQUERYPLUGIN::FORM, JQUERYPLUGIN::TMPL"
+}%<!-- -->
+<!-- -->%TMPL:END%
+
+%TMPL:DEF{"analyzeform"}%<!-- -->
+<form id="analyzeForm" action="%SCRIPTURLPATH{"jsonrpc"}%/HarvestPlugin/analyze" method="post">
+<div class="foswikiFormSteps">
+  <div class="foswikiFormStep">
+    <table class="foswikiLayoutTable">
+      <tr>
+        <th valign="top">Url:</th>
+        <td>
+          <input type="text" class="foswikiInputField" size="80" name="url" value="%URLPARAM{"url"}%" id="analyzeForm_url" />
+          <div class="foswikiFormDescription">
+            %MAKETEXT{
+              "Enter the url of an html page containing images. Clicking on "Preview" will first inspect all reachable pages and present an overview of downloadable images."
+            }%
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top">Type:</th>
+        <td>
+          <input type="text" class="foswikiInputField" size="80" name="type" value="%URLPARAM{"type" default="image"}%" id="analyzeForm_type" />
+          <div class="foswikiFormDescription">
+            %MAKETEXT{
+              "Regular expression of the content's mime type to be downloaded, e.g. =image|pdf|zip= to download all images, pdfs and zip archives."
+            }%
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top">%MAKETEXT{"Include"}%:</th>
+        <td>
+          <input type="text" class="foswikiInputField" size="80" name="include" value="%URLPARAM{"include"}%" id="analyzeForm_include" />
+          <div class="foswikiFormDescription">
+            %MAKETEXT{
+              "Regular expression to test pages of the result set."
+            }%
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top">%MAKETEXT{"Exclude"}%:</th>
+        <td>
+          <input type="text" class="foswikiInputField" size="80" name="exclude" value="%URLPARAM{"exclude"}%" id="analyzeForm_exclude" />
+          <div class="foswikiFormDescription">
+            %MAKETEXT{
+              "Regular expression to exclude pages from the result, for example: =spinner.gif|piwik|gravatar="
+            }%
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th valign="top">%MAKETEXT{"Depth"}%:</th>
+        <td>
+          <input type="text" class="foswikiInputField" size="2" name="depth" value="%URLPARAM{"depth" default="0"}%" id="analyzeForm_depth" />
+          <div class="foswikiFormDescription">
+            %MAKETEXT{
+              "Specify the depth of crawling the pages starting at the given location. A value of '0' will disable following links."
+            }%
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr />
+  <div class="foswikiFormStep">
+    %BUTTON{"Preview" icon="picture" type="submit"}%
+    %BUTTON{"Cancel" icon="cross" target="%BASEWEB%.%BASETOPIC%"}%
+    %CLEAR%
+  </div>
+</div>
+</form>
+<div id="#messageContainer"></div>
+<!-- -->%TMPL:END%
+
+%TMPL:DEF{"downloadform"}%<!-- -->
+<form id="downloadForm" action="%SCRIPTURLPATH{"jsonrpc"}%/HarvestPlugin/attach" method="post">
+<input type="hidden" name="topic" value="%BASEWEB%.%BASETOPIC%" />
+<div class="foswikiFormSteps">
+  <h2>Select objects to download:</h2>
+  <div class="foswikiFormStep">
+    <div class="harvestResults"></div>
+  </div>
+  <div class="foswikiFormStep">
+    <label><input type="checkbox" class="foswikiCheckbox" id="selecttoggle">
+     <span id="selectall">%MAKETEXT{"Select all"}%</span>
+     <span id="clearall" style="display:none">%MAKETEXT{"Clear all"}%</span>
+    </label>
+  </div>
+  <hr />
+  <div class="foswikiFormStep">
+    %BUTTON{"%MAKETEXT{"Download"}%" icon="disk" id="downloadBtn" type="submit"}%
+    %CLEAR%
+  </div>
+</div>
+</form>
+<!-- -->%TMPL:END%
+
+%TMPL:DEF{"jquerytemplates"}%<!-- -->
+<script id="imageTemplate" type="text/x-jquery-tmpl">
+<tr>
+  <td>
+    <img src="${$data.thumbnail}" title="${$data.title}" {{if !$data.width || parseInt($data.width, 10) > 48}}width="48"{{/if}} />
+  </td>
+  <td>
+      ${$data.shorttitle}
+  </td>
+  <td>
+    {{if $data.width}}
+      ${$data.width}
+    {{/if}}
+    {{if $data.height}}
+      x ${$data.height}
+    {{/if}}
+  </td>
+  <td>
+    <input type="checkbox" value="${$data.src}" name="selection" />
+  </td>
+</tr>
+</script>
+<!-- -->%TMPL:END%
