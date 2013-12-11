@@ -3,7 +3,7 @@ jQuery(function($) {
 
   $("#selecttoggle").change(function() {
     var $this = $(this);
-    if ($this.attr("checked")) {
+    if ($this.is(":checked")) {
       $this.parent().find("#selectall").hide();
       $this.parent().find("#clearall").show();
       $(".harvestResults input").parent().parent().addClass("selected");
@@ -73,7 +73,7 @@ jQuery(function($) {
     }
   });
 
-  $(".harvestResults input").live("change", function(e) {
+  $(document).on("change", ".harvestResults input", function(e) {
     gotChangeEvent = true;
     window.setTimeout(function() {
       gotChangeEvent = false;
@@ -81,10 +81,10 @@ jQuery(function($) {
     selectRow(this);
   });
 
-  $(".harvestResults td").live("click", function(e) {
+  $(document).on("click", ".harvestResults td", function(e) {
     var $elem = $(this).parents('tr:first').find('input[type=checkbox]');
     if (!gotChangeEvent) {
-      if ($elem.attr("checked")) {
+      if ($elem.is(":checked")) {
         $elem.removeAttr("checked");
       } else {
         $elem.attr("checked", "checked");
@@ -100,7 +100,7 @@ jQuery(function($) {
         text = "selected",
         classStr = "plus";
 
-    if ($elem.attr("checked")) {
+    if ($elem.is(":checked")) {
       $row.addClass("selected");
     } else {
       $row.removeClass("selected");
@@ -112,17 +112,22 @@ jQuery(function($) {
   $(".harvestResults img").livequery(function() {
     var $this = $(this);
     $this.tooltip({
-          delay:350,
-          track:true,
-          showURL:false,
-          bodyHandler: function() { 
-            var img = $("<img/>").attr('src', $this.attr("src"));/*.css({
+        show: {
+          delay: 350
+        },
+        position: { 
+          my: "left+15 top+20", 
+          at: "left bottom", 
+          collision: "flipfit" 
+        },
+        track:true,
+        content: function() { 
+            return $("<img/>").attr('src', $this.attr("src")).css({
               "max-width": 300,
               "max-height": 600
-            });*/
-            return $("<div class='imgTooltip'></div>").append(img);
-          }
-        });
-    });
+            });
+        }
+      });
+  });
 });
 

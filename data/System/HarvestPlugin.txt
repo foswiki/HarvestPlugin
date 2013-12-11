@@ -1,4 +1,5 @@
-%META:TOPICINFO{author="ProjectContributor" comment="reprev" date="1338285366" format="1.1" reprev="2" version="2"}%
+%META:TOPICINFO{author="BaseUserMapping_999" comment="autosave" date="1356278772" format="1.1" version="3"}%
+
 ---+!! %TOPIC%
 
 This plugin can be used to download and archive external resource, like images or pdfs.
@@ -29,11 +30,12 @@ have to modify your local !PatternSkin to add this tool to your site.
 -->
 
 |  Author(s): | Michael Daum|
-|  Copyright: | &copy; 2012 Michael Daum http://michaeldaumconsulting.com |
+|  Copyright: | &copy; 2012-2013 Michael Daum http://michaeldaumconsulting.com |
 |  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  12 Dec 2013 | first dot.oh release |
 |  Dependencies: | %$DEPENDENCIES% |
 |  Home page: | Foswiki:Extensions/%TOPIC% |
 |  Support: | Foswiki:Support/%TOPIC% |

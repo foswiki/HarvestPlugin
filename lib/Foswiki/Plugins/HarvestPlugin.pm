@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2012 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2013 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,8 +27,8 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '$Rev$';
-our $RELEASE = '0.10';
+our $VERSION = '1.00';
+our $RELEASE = '1.00';
 our $SHORTDESCRIPTION = 'Download and archive resources from the web';
 our $NO_PREFS_IN_TOPIC = 1;
 our $baseWeb;

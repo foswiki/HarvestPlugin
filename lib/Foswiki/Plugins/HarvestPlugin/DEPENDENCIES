@@ -1,2 +1,3 @@
 Foswiki::Plugins::MimeIconPlugin,>=1.1,perl,Required. 
 Foswiki::Contrib::JsonRpcContrib,>=1.1,perl,Required. 
+Foswiki::Plugins::JQueryPlugin,>=4.91,perl,Required. 

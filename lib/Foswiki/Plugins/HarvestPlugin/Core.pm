@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2012 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2013 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -344,6 +344,8 @@ sub crawl {
 
   return values %$result unless defined $content;
 
+  #writeDebug("content=$content");
+
   # parse the page
   require HTML::TokeParser;
   my $parser = HTML::TokeParser->new(\$content);
@@ -365,7 +367,7 @@ sub crawl {
     next if $exclude && $record->{src} =~ /$exclude/;
     next if $include && $record->{src} !~ /$include/;
 
-    $result->{$record->{src}} = $record if $record->{type} =~ /$elementType/;
+    $result->{$record->{src}} = $record if $record->{type} && $record->{type} =~ /$elementType/;
     $foundLinks{$record->{src}} = 1 if $depth > 0 && $record->{type} eq 'link';
     $baseUri = $node->[1]{href} if $node->[0] eq 'base';
   }
@@ -417,7 +419,7 @@ sub node2record {
     my $src = $node->[1]{src} || '';
     $src =~ s/\?.(.*)$//; # smell
     $record = {
-      title => ($node->[1]{alt} || $node->[1]{title}) || $src || '',
+      title => ($node->[1]{alt} || $node->[1]{title}) || $src,
       src => $src,
       thumbnail => $src,
       type => "image"
@@ -448,7 +450,7 @@ sub node2record {
     writeDebug("src=$src, type=$type");
 
     $record = {
-      title => $node->[1]{title} || $node->[1]{_content} || $src || '',
+      title => $node->[1]{title} || $node->[1]{_content} || $src,
       src => $src,
       type => $type,
     };
@@ -466,6 +468,9 @@ sub node2record {
 
     $record->{rel} = $node->[1]{rel} if defined $node->[1]{rel};
   }
+
+  $record->{title} ||= '';
+
 
   if ($record->{title} =~ /^https?:.*\/(.*?)$/) {
     $record->{title} = $1;
@@ -547,7 +552,7 @@ sub getExternalResource {
 
   unless ($res->is_success) {
     writeDebug("url=$url, http error=".$res->status_line);
-    throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error - ".$res->status_line);
+    throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error fetching $url: ".$res->code." - ".$res->status_line);
   }
 
   writeDebug("http status=".$res->status_line);
