@@ -133,8 +133,6 @@ sub printJSONRPC {
 
 ---++ handleUrl2Tml($session, $subject, $verb, $response) -> $string
 
-handles the createTopic REST call
-
 =cut
 
 sub restUrl2Tml {

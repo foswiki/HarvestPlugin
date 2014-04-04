@@ -47,7 +47,9 @@ sub initPlugin {
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'analyze', sub { return getCore()->jsonRpcAnalyze(@_); });
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'attach',  sub { return getCore()->jsonRpcAttach(@_); });
 
-  Foswiki::Func::registerRESTHandler('url2tml', sub { return getCore()->restUrl2Tml(@_); }); # TODO: convert to JsonRpcContrib
+  Foswiki::Func::registerRESTHandler('url2tml', sub { 
+    return getCore()->restUrl2Tml(@_); 
+  }, authenticate => 0); # TODO: convert to JsonRpcContrib
 
   return 1;
 }
