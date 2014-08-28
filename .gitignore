@@ -1,0 +1,11 @@
+*.gz
+*.swp
+pub/System/HarvestPlugin/harvest.css
+pub/System/HarvestPlugin/harvest.js
+HarvestPlugin.md5
+HarvestPlugin.sha1
+HarvestPlugin.tgz
+HarvestPlugin.txt
+HarvestPlugin.zip
+HarvestPlugin_installer
+HarvestPlugin_installer.pl

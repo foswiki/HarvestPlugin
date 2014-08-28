@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2013 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2014 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ use Error qw(:try);
 use Encode ();
 use URI ();
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 # Error codes for json-rpc response
 # 1000: no url 
@@ -42,12 +42,12 @@ use constant DEBUG => 0; # toggle me
 
 ---++ writeDebug($message(
 
-prints a debug message to STDERR when this module is in DEBUG mode
+prints a debug message to STDERR when this module is in TRACE mode
 
 =cut
 
 sub writeDebug {
-  print STDERR "HarvestPlugin::Core - $_[0]\n" if DEBUG;
+  print STDERR "HarvestPlugin::Core - $_[0]\n" if TRACE;
 }
 
 =begin TML
@@ -165,7 +165,7 @@ sub restUrl2Tml {
 
   # cleanup
   $content =~ s/^.*<body.*?>(.*)<\/body>.*$/$1/s;
-  $content =~ s/<!-- .* -->//g;
+  $content =~ s/<!--.*-->//g;
   $content =~ s/<!\[CDATA\[.*?\]\](>|&gt;)//gs; # remove junk
   $content =~ s/<script.*?>.*?<\/script>//gs;
   $content =~ s/<fb.*?>.*?<\/fb.*?>//gs;
@@ -557,6 +557,8 @@ sub getExternalResource {
 
   #my $content = $res->content;
   my $content = $res->decoded_content();
+
+  $content = Encode::encode($Foswiki::cfg{Site}{CharSet}, $content);
 
   if ($cache) {
     writeDebug("caching content for $url");

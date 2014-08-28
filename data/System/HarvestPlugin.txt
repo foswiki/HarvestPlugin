@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="BaseUserMapping_999" comment="autosave" date="1356278772" format="1.1" version="3"}%
+%META:TOPICINFO{author="ProjectContributor" comment="autosave" date="1356278772" format="1.1" version="3"}%
 
 ---+!! %TOPIC%
 
@@ -30,11 +30,12 @@ have to modify your local !PatternSkin to add this tool to your site.
 -->
 
 |  Author(s): | Michael Daum|
-|  Copyright: | &copy; 2012-2013 Michael Daum http://michaeldaumconsulting.com |
+|  Copyright: | &copy; 2012-2014 Michael Daum http://michaeldaumconsulting.com |
 |  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  04 Apr 2014 | flag rest handlers that don't require authentication |
 |  12 Dec 2013 | first dot.oh release |
 |  Dependencies: | %$DEPENDENCIES% |
 |  Home page: | Foswiki:Extensions/%TOPIC% |
