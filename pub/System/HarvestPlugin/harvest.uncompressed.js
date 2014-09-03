@@ -1,4 +1,6 @@
 jQuery(function($) {
+"use strict";
+
   var gotChangeEvent = false;
 
   $("#selecttoggle").change(function() {

@@ -243,7 +243,7 @@ sub jsonRpcAttach {
     next unless $content;
 
     # SMELL: first have to write it to a temp file before being able to attach it
-    my $tempFile = new File::Temp();
+    my $tempFile = new File::Temp(UNLINK => TRACE?0:1);
     print $tempFile $content;
 
     my $baseFilename = $url;
@@ -538,7 +538,7 @@ sub getExternalResource {
 
   if ($cache) {
     my $content = $cache->get(_cache_key($url));
-    #writeDebug("found content for $url in cache") if defined $content;
+    writeDebug("found content for $url in cache") if defined $content;
     return $content if defined $content;
   }
 
@@ -555,10 +555,9 @@ sub getExternalResource {
 
   writeDebug("http status=".$res->status_line);
 
-  #my $content = $res->content;
   my $content = $res->decoded_content();
-
-  $content = Encode::encode($Foswiki::cfg{Site}{CharSet}, $content);
+  my $contentType = $res->header('Content-Type');
+  writeDebug("content type=$contentType");
 
   if ($cache) {
     writeDebug("caching content for $url");
@@ -566,6 +565,12 @@ sub getExternalResource {
   }
 
   return $content;
+}
+
+sub purgeCache {
+  my $this = shift;
+
+  $this->_cache->purge;
 }
 
 sub _cache_key {

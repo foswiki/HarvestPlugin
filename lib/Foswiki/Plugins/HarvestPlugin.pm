@@ -27,8 +27,8 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.01';
-our $RELEASE = '1.01';
+our $VERSION = '1.02';
+our $RELEASE = '1.02';
 our $SHORTDESCRIPTION = 'Download and archive resources from the web';
 our $NO_PREFS_IN_TOPIC = 1;
 our $baseWeb;
@@ -46,6 +46,12 @@ sub initPlugin {
 
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'analyze', sub { return getCore()->jsonRpcAnalyze(@_); });
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'attach',  sub { return getCore()->jsonRpcAttach(@_); });
+
+  Foswiki::Func::registerRESTHandler('purgeCache', sub { return getCore()->purgeCache(@_); },
+    authenticate => 0,
+    validate => 0,
+    http_allow => 'GET,POST',
+  );
 
   Foswiki::Func::registerRESTHandler('url2tml', sub { 
       return getCore()->restUrl2Tml(@_); 
