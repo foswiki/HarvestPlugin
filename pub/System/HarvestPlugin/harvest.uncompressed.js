@@ -34,8 +34,7 @@ jQuery(function($) {
         pnotify_delay: 2000,
         pnotify_opacity: 0.9
       });
-      //console.log(data);
-      var res = $("#imageTemplate").tmpl(data.result).appendTo(container);
+      container.html($("#imageTemplate").render(data.result));
       $(".harvestResults").replaceWith(container);
       downloadForm.show();
       //$("#analyzeForm").hide();

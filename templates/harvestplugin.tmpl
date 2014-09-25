@@ -11,7 +11,7 @@
 %TMPL:P{"analyzeform"}%
 %TMPL:P{"downloadform"}%
 %TMPL:P{"jquerytemplates"}%
-%JQREQUIRE{"pnotify, blockui, form, ui, tmpl"}%<!-- -->
+%JQREQUIRE{"pnotify, blockui, form, ui, render"}%<!-- -->
 %ADDTOZONE{
   "head" 
   text="<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.css'  media='all' />" 
@@ -123,24 +123,24 @@
 <!-- -->%TMPL:END%
 
 %TMPL:DEF{"jquerytemplates"}%<!-- -->
-<script id="imageTemplate" type="text/x-jquery-tmpl">
+<script id="imageTemplate" type="text/x-jsrender">
 <tr>
   <td>
-    <img src="${$data.thumbnail}" title="${$data.title}" {{if !$data.width || parseInt($data.width, 10) > 48}}width="48"{{/if}} />
+    <img src="{{:thumbnail}}" title="{{:title}}" {{if !width || parseInt(width, 10) > 48}}width="48"{{/if}} />
   </td>
   <td>
-      ${$data.shorttitle}
+      {{:shorttitle}}
   </td>
   <td>
-    {{if $data.width}}
-      ${$data.width}
+    {{if width}}
+      {{:width}}
     {{/if}}
-    {{if $data.height}}
-      x ${$data.height}
+    {{if height}}
+      x {{:height}}
     {{/if}}
   </td>
   <td>
-    <input type="checkbox" value="${$data.src}" name="selection" />
+    <input type="checkbox" value="{{:src}}" name="selection" />
   </td>
 </tr>
 </script>
