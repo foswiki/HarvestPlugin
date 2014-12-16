@@ -430,7 +430,6 @@ sub node2record {
   # a
   if ($node->[0] eq 'a') {
     my $src = $node->[1]{href} || '';
-
     return if $src =~ /^#/; # weed out anchors;
 
     my $type = $this->getMimeType($src);
@@ -446,6 +445,7 @@ sub node2record {
       $type = "link";
     }
     writeDebug("src=$src, type=$type");
+
 
     $record = {
       title => $node->[1]{title} || $node->[1]{_content} || $src,
@@ -627,6 +627,10 @@ sub client {
         $ua->no_proxy(@skipDomains);
       }
     }
+
+    $ua->ssl_opts(
+      verify_hostname => 0,    # SMELL
+    );
 
     $this->{client} = $ua;
   }

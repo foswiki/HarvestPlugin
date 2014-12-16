@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" comment="autosave" date="1356278772" format="1.1" version="3"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1418734826" format="1.1" version="1"}%
 
 ---+!! %TOPIC%
 
@@ -35,6 +35,7 @@ have to modify your local !PatternSkin to add this tool to your site.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  16 Dec 2014 | ignore ssl certificate problems when downloading stuff |
 |  29 Sep 2014 | replaced deprecated jquery.tmpl with jsrendr |
 |  03 Sep 2014 | fixed corruption of downloaded files |
 |  04 Apr 2014 | flag rest handlers that don't require authentication |
@@ -43,6 +44,6 @@ have to modify your local !PatternSkin to add this tool to your site.
 |  Home page: | Foswiki:Extensions/%TOPIC% |
 |  Support: | Foswiki:Support/%TOPIC% |
 
-%META:FILEATTACHMENT{name="HarvestPluginSnap3.png" attachment="HarvestPluginSnap3.png" attr="" comment="" date="1338285037" size="101095" user="ProjectContributor" version="1"}%
-%META:FILEATTACHMENT{name="HarvestPluginSnap2.png" attachment="HarvestPluginSnap2.png" attr="" comment="" date="1338285038" size="51494" user="ProjectContributor" version="1"}%
-%META:FILEATTACHMENT{name="HarvestPluginSnap1.png" attachment="HarvestPluginSnap1.png" attr="" comment="" date="1338285039" size="43468" user="ProjectContributor" version="1"}%
+%META:FILEATTACHMENT{name="HarvestPluginSnap3.png" attachment="HarvestPluginSnap3.png" attr="" comment="" date="1418734826" size="101095" user="ProjectContributor" version="1"}%
+%META:FILEATTACHMENT{name="HarvestPluginSnap2.png" attachment="HarvestPluginSnap2.png" attr="" comment="" date="1418734826" size="51494" user="ProjectContributor" version="1"}%
+%META:FILEATTACHMENT{name="HarvestPluginSnap1.png" attachment="HarvestPluginSnap1.png" attr="" comment="" date="1418734826" size="43468" user="ProjectContributor" version="1"}%

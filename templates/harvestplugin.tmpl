@@ -21,7 +21,7 @@
   "script"
   text="<script src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
   id="HARVESTPLUGIN::JS"
-  requires="JQUERYPLUGIN::PNOTIFY, JQUERYPLUGIN::BLOCKUI, JQUERYPLUGIN::TOOLTIP, JQUERYPLUGIN::FORM, JQUERYPLUGIN::TMPL"
+  requires="JQUERYPLUGIN::PNOTIFY, JQUERYPLUGIN::BLOCKUI, JQUERYPLUGIN::TOOLTIP, JQUERYPLUGIN::FORM, JQUERYPLUGIN::RENDER"
 }%<!-- -->
 <!-- -->%TMPL:END%
 
@@ -95,7 +95,8 @@
   </div>
 </div>
 </form>
-<div id="#messageContainer"></div>
+
+<div id="messageContainer"></div>
 <!-- -->%TMPL:END%
 
 %TMPL:DEF{"downloadform"}%<!-- -->
@@ -126,7 +127,7 @@
 <script id="imageTemplate" type="text/x-jsrender">
 <tr>
   <td>
-    <img src="{{:thumbnail}}" title="{{:title}}" {{if !width || parseInt(width, 10) > 48}}width="48"{{/if}} />
+    <div style='overflow:hidden;width:48px;max-height:48px'><img src="{{:thumbnail}}" title="{{:title}}" width="48" /></div>
   </td>
   <td>
       {{:shorttitle}}

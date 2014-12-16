@@ -27,8 +27,8 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.10';
-our $RELEASE = '1.10';
+our $VERSION = '1.20';
+our $RELEASE = '1.20';
 our $SHORTDESCRIPTION = 'Download and archive resources from the web';
 our $NO_PREFS_IN_TOPIC = 1;
 our $baseWeb;

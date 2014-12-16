@@ -22,6 +22,7 @@ jQuery(function($) {
     dataType:"json",
     beforeSubmit: function() {
       $.blockUI({message:"<h1>Inspecting ...</h1>"});
+      $("#messageContainer").hide();
     },
     success: function(data, msg, xhr) {
       var downloadForm = $("#downloadForm"), 
@@ -58,7 +59,7 @@ jQuery(function($) {
     type:"post",
     beforeSubmit: function() {
       $.blockUI({message:"<h1>Downloading ...</h1>"});
-      $(".foswikiErrorMessage").remove();
+      $("#messageContainer").empty().hide();
     },
     success: function(data, msg, xhr) {
       var url = foswiki.getPreference("SCRIPTURL")+"/view/"+foswiki.getPreference("WEB")+"/"+foswiki.getPreference("TOPIC");
@@ -69,8 +70,10 @@ jQuery(function($) {
       }, 500);
     },
     error: function(xhr, status, error) {
+      var data = xhr.responseJSON;
       $.unblockUI();
-      $("#messageContainer").append("<div class='foswikiErrorMessage'>Error: "+data.error.message+"</div>");
+      $("#messageContainer").append("<div class='foswikiErrorMessage'>Error: "+data.error.message+"</div>").show();
+      $("#downloadForm").hide();
     }
   });
 
