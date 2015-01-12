@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2014 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2015 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -303,6 +303,8 @@ sub jsonRpcAnalyze {
   };
   alarm $timeout;
   @result = $this->crawl($request->param("url"), $elementType, $depth, $exclude, $include);
+
+  @result = sort {$a->{title} cmp $b->{title}} @result;
   alarm 0;
 
   writeDebug("found=".scalar(@result)." ".$elementType."s");

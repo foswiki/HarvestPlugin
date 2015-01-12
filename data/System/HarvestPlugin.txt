@@ -30,11 +30,12 @@ have to modify your local !PatternSkin to add this tool to your site.
 -->
 
 |  Author(s): | Michael Daum|
-|  Copyright: | &copy; 2012-2014 Michael Daum http://michaeldaumconsulting.com |
+|  Copyright: | &copy; 2012-2015 Michael Daum http://michaeldaumconsulting.com |
 |  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  12 Jan 2015 | sort results returned from external web page |
 |  16 Dec 2014 | ignore ssl certificate problems when downloading stuff |
 |  29 Sep 2014 | replaced deprecated jquery.tmpl with jsrendr |
 |  03 Sep 2014 | fixed corruption of downloaded files |
