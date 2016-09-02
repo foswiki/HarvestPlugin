@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2015 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2016 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,10 +21,11 @@ use Foswiki::Contrib::JsonRpcContrib::Error ();
 use Foswiki::AccessControlException ();
 use Foswiki::Func ();
 use Foswiki::Sandbox ();
+use Foswiki::Plugins ();
 use Digest::MD5 ();
 use Error qw(:try);
-use Encode ();
 use URI ();
+use File::Temp ();
 
 use constant TRACE => 0; # toggle me
 
@@ -59,15 +60,17 @@ constructor for the core
 =cut
 
 sub new {
-  my ($class, $baseWeb, $baseTopic) = @_;
+  my $class= shift;
 
   my $workingDir = Foswiki::Func::getWorkArea('HarvestPlugin');
+  my $session = $Foswiki::Plugins::SESSION;
 
   my $this = bless({
-    baseWeb => $baseWeb,
-    baseTopic => $baseTopic,
+    baseWeb => $session->{webName},
+    baseTopic => $session->{topicName},
     cacheRoot => $workingDir.'/cache',
     cacheExpire => "1 h",
+    @_
   }, $class);
 
   return $this;
@@ -235,20 +238,38 @@ sub jsonRpcAttach {
   }
 
   foreach my $url (@$selection) {
-    require File::Temp;
 
+    $url = URI->new($url);
     writeDebug("url=$url");
 
-    my $content = $this->getExternalResource($url);
+    my ($content, $contentType) = $this->getExternalResource($url);
     next unless $content;
 
     # SMELL: first have to write it to a temp file before being able to attach it
     my $tempFile = new File::Temp(UNLINK => TRACE?0:1);
     print $tempFile $content;
 
-    my $baseFilename = $url;
-    $baseFilename =~ s/^.*[\/\\](.*?)(?:\?.*)?$/$1/;
-    $baseFilename =~ s/%([\da-f]{2})/chr(hex($1))/gei;
+    my $baseFilename;
+    foreach my $segment (reverse $url->path_segments) {
+      if ($segment ne '') {
+        $baseFilename = $segment;
+        $baseFilename =~ s/%([\da-f]{2})/chr(hex($1))/gei;
+
+        # SMELL: just covering a few
+        $baseFilename .= ".jpeg" if $baseFilename !~ /\.jpe?g$/ && $contentType eq 'image/jpeg';
+        $baseFilename .= ".gif" if $baseFilename !~ /\.gif$/ && $contentType eq 'image/gif';
+        $baseFilename .= ".png" if $baseFilename !~ /\.png$/ && $contentType eq 'image/png';
+        $baseFilename .= ".tiff" if $baseFilename !~ /\.tiff$/ && $contentType eq 'image/tiff';
+        $baseFilename .= ".bmp" if $baseFilename !~ /\.bmp$/ && $contentType eq 'image/bmp';
+        $baseFilename .= ".webp" if $baseFilename !~ /\.webp$/ && $contentType eq 'image/webp';
+        last;
+      }
+    }
+
+    unless ($baseFilename) {
+      writeDebug("wasn't able to detect basefile from $url");
+      next;
+    }
 
     my $origName;
 
@@ -288,7 +309,7 @@ sub jsonRpcAnalyze {
   my $include = $request->param("include");
   my $maxDepth = $Foswiki::cfg{HarvestPlugin}{MaxDepth};
   $maxDepth = 1 unless defined $maxDepth;
-  my $timeout = $foswiki::cfg{HarvestPlugin}{TimeOut} || 60;  
+  my $timeout = $Foswiki::cfg{HarvestPlugin}{TimeOut} || 60;  
 
   throw Foswiki::Contrib::JsonRpcContrib::Error(1001, "invalid depth parameter")
     if $depth < 0 || $depth > $maxDepth;
@@ -481,12 +502,6 @@ sub node2record {
     $record->{shorttitle} = $record->{title};
   }
 
-  # encode to utf8...SMELL: shouldn't that be done inside JsonRpcContrib?
-  while (my ($key, $val) = each %$record) {
-    $record->{$key} = Encode::encode_utf8($val);
-    #print STDERR "$key=$val\n";
-  }
-
   # filter some
   return if $record->{width} && $record->{width} eq 1 && $record->{height} && $record->{height} eq 1;
   return $record;
@@ -524,10 +539,7 @@ sub getMimeType {
 
 =begin TML
 
----++ getExternalResource($url) -> $content
-
-wrapper to Foswiki::Net::getExternalResource() which
-adds a cache to it
+---++ getExternalResource($url) -> ($content, $type)
 
 =cut
 
@@ -535,37 +547,45 @@ sub getExternalResource {
   my ($this, $url) = @_;
 
   my $cache = $this->_cache;
+  my $content;
+  my $contentType;
 
   $url =~ s/\/$//;
 
   if ($cache) {
-    my $content = $cache->get(_cache_key($url));
-    writeDebug("found content for $url in cache") if defined $content;
-    return $content if defined $content;
+    my $bucket = $cache->get(_cache_key($url));
+    if (defined $bucket) {
+      $content = $bucket->{content};
+      $contentType = $bucket->{type};
+      writeDebug("found content for $url in cache contentType=$contentType");
+    }
   }
 
-  my $client = $this->client;
-  my $res = $client->get($url);
+  unless (defined $content) { 
+    my $client = $this->client;
+    my $res = $client->get($url);
 
-  throw Foswiki::Contrib::JsonRpcContrib::Error(1002, "error fetching url") 
-    unless $res;
+    throw Foswiki::Contrib::JsonRpcContrib::Error(1002, "error fetching url") 
+      unless $res;
 
-  unless ($res->is_success) {
-    writeDebug("url=$url, http error=".$res->status_line);
-    throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error fetching $url: ".$res->code." - ".$res->status_line);
+    unless ($res->is_success) {
+      writeDebug("url=$url, http error=".$res->status_line);
+      throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error fetching $url: ".$res->code." - ".$res->status_line);
+    }
+
+    writeDebug("http status=".$res->status_line);
+
+    $content = $res->decoded_content();
+    $contentType = $res->header('Content-Type');
+    writeDebug("content type=$contentType");
+
+    if ($cache) {
+      writeDebug("caching content for $url");
+      $cache->set(_cache_key($url), {content => $content, type => $contentType});
+    }
   }
 
-  writeDebug("http status=".$res->status_line);
-
-  my $content = $res->decoded_content();
-  my $contentType = $res->header('Content-Type');
-  writeDebug("content type=$contentType");
-
-  if ($cache) {
-    writeDebug("caching content for $url");
-    $cache->set(_cache_key($url), $content);
-  }
-
+  return ($content, $contentType) if wantarray;
   return $content;
 }
 
@@ -623,7 +643,7 @@ sub client {
       $proxy .= ':' . $port if $port;
       $ua->proxy([ 'http', 'https' ], $proxy);
 
-      my $proxySkip = $Foswiki::cfg{PROXY}{SkipProxyForDomains};
+      my $proxySkip = $Foswiki::cfg{PROXY}{SkipProxyForDomains} || $Foswiki::cfg{PROXY}{NoProxy};
       if ($proxySkip) {
         my @skipDomains = split(/\s*,\s*/, $proxySkip);
         $ua->no_proxy(@skipDomains);

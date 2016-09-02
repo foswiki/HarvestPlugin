@@ -11,19 +11,16 @@
 %TMPL:P{"analyzeform"}%
 %TMPL:P{"downloadform"}%
 %TMPL:P{"jquerytemplates"}%
-%JQREQUIRE{"pnotify, blockui, form, ui, render"}%<!-- -->
-%ADDTOZONE{
+%JQREQUIRE{"pnotify, blockui, form, ui, render"}%%ADDTOZONE{
   "head" 
   text="<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.css'  media='all' />" 
   id="HARVESTPLUGIN::CSS"
-}%<!-- -->
-%ADDTOZONE{
+}%%ADDTOZONE{
   "script"
-  text="<script src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
+  text="<script type='text/javascript' src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
   id="HARVESTPLUGIN::JS"
   requires="JQUERYPLUGIN::PNOTIFY, JQUERYPLUGIN::BLOCKUI, JQUERYPLUGIN::TOOLTIP, JQUERYPLUGIN::FORM, JQUERYPLUGIN::RENDER"
-}%<!-- -->
-<!-- -->%TMPL:END%
+}%<!-- -->%TMPL:END%
 
 %TMPL:DEF{"analyzeform"}%<!-- -->
 <form id="analyzeForm" action="%SCRIPTURLPATH{"jsonrpc"}%/HarvestPlugin/analyze" method="post">
@@ -31,7 +28,7 @@
   <div class="foswikiFormStep">
     <table class="foswikiLayoutTable">
       <tr>
-        <th valign="top">Url:</th>
+        <th style='vertical-align:top'>Url:</th>
         <td>
           <input type="text" class="foswikiInputField" size="80" name="url" value="%URLPARAM{"url"}%" id="analyzeForm_url" />
           <div class="foswikiFormDescription">
@@ -42,7 +39,7 @@
         </td>
       </tr>
       <tr>
-        <th valign="top">Type:</th>
+        <th style='vertical-align:top'>Type:</th>
         <td>
           <input type="text" class="foswikiInputField" size="80" name="type" value="%URLPARAM{"type" default="image"}%" id="analyzeForm_type" />
           <div class="foswikiFormDescription">
@@ -53,7 +50,7 @@
         </td>
       </tr>
       <tr>
-        <th valign="top">%MAKETEXT{"Include"}%:</th>
+        <th style='vertical-align:top'>%MAKETEXT{"Include"}%:</th>
         <td>
           <input type="text" class="foswikiInputField" size="80" name="include" value="%URLPARAM{"include"}%" id="analyzeForm_include" />
           <div class="foswikiFormDescription">
@@ -64,7 +61,7 @@
         </td>
       </tr>
       <tr>
-        <th valign="top">%MAKETEXT{"Exclude"}%:</th>
+        <th style='vertical-align:top'>%MAKETEXT{"Exclude"}%:</th>
         <td>
           <input type="text" class="foswikiInputField" size="80" name="exclude" value="%URLPARAM{"exclude"}%" id="analyzeForm_exclude" />
           <div class="foswikiFormDescription">
@@ -75,7 +72,7 @@
         </td>
       </tr>
       <tr>
-        <th valign="top">%MAKETEXT{"Depth"}%:</th>
+        <th style='vertical-align:top'>%MAKETEXT{"Depth"}%:</th>
         <td>
           <input type="text" class="foswikiInputField" size="2" name="depth" value="%URLPARAM{"depth" default="0"}%" id="analyzeForm_depth" />
           <div class="foswikiFormDescription">

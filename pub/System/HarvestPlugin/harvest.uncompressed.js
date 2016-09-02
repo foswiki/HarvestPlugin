@@ -1,97 +1,98 @@
-jQuery(function($) {
 "use strict";
+jQuery(function($) {
 
   var gotChangeEvent = false;
 
-  $("#selecttoggle").change(function() {
+  $(document).on("change", "#selecttoggle", function() {
     var $this = $(this);
     if ($this.is(":checked")) {
       $this.parent().find("#selectall").hide();
       $this.parent().find("#clearall").show();
       $(".harvestResults input").parent().parent().addClass("selected");
-      $(".harvestResults input").attr('checked', 'checked');
+      $(".harvestResults input").prop('checked', true);
     } else {
       $this.parent().find("#selectall").show();
       $this.parent().find("#clearall").hide();
       $(".harvestResults input").parent().parent().removeClass('selected');
-      $(".harvestResults input").removeAttr('checked');
+      $(".harvestResults input").prop('checked', false);
     }
   });
 
-  $("#analyzeForm").ajaxForm({
-    dataType:"json",
-    beforeSubmit: function() {
-      $.blockUI({message:"<h1>Inspecting ...</h1>"});
-      $("#messageContainer").hide();
-    },
-    success: function(data, msg, xhr) {
-      var downloadForm = $("#downloadForm"), 
-          len = data.result.length, i,
-          container = $("<table class='harvestResults'></table>");
-      $.unblockUI();
-      $.pnotify({
-        pnotify_history: false,
-        pnotify_text: len+" images found",
-        pnotify_delay: 2000,
-        pnotify_opacity: 0.9
-      });
-      container.html($("#imageTemplate").render(data.result));
-      $(".harvestResults").replaceWith(container);
-      downloadForm.show();
-      //$("#analyzeForm").hide();
-    },
-    error: function(xhr, status, error) {
-      var obj = $.parseJSON(xhr.responseText);
-      $.unblockUI();
-      $.pnotify({
-        pnotify_history: false,
-        pnotify_title: "Error",
-        pnotify_text: obj.error.message,
-        pnotify_type: "error",
-        pnotify_delay: 2000,
-        pnotify_opacity: 0.9
-      });
-    }
-  });  
-
-  $("#downloadForm").ajaxForm({
-    dataType:"json",
-    type:"post",
-    beforeSubmit: function() {
-      $.blockUI({message:"<h1>Downloading ...</h1>"});
-      $("#messageContainer").empty().hide();
-    },
-    success: function(data, msg, xhr) {
-      var url = foswiki.getPreference("SCRIPTURL")+"/view/"+foswiki.getPreference("WEB")+"/"+foswiki.getPreference("TOPIC");
-      $.unblockUI();
-      $.blockUI({message:"<h1>"+data.result+"</h1>"});
-      window.setTimeout(function() {
-        window.location.href = url;
-      }, 500);
-    },
-    error: function(xhr, status, error) {
-      var data = xhr.responseJSON;
-      $.unblockUI();
-      $("#messageContainer").append("<div class='foswikiErrorMessage'>Error: "+data.error.message+"</div>").show();
-      $("#downloadForm").hide();
-    }
+  $("#analyzeForm").livequery(function() {
+    $(this).ajaxForm({
+      dataType:"json",
+      beforeSubmit: function() {
+        $.blockUI({message:"<h1>Inspecting ...</h1>"});
+        $("#messageContainer").hide();
+      },
+      success: function(data) {
+        var downloadForm = $("#downloadForm"), 
+            len = data.result.length, 
+            container = $("<table class='harvestResults'></table>");
+        $.unblockUI();
+        $.pnotify({
+          pnotify_history: false,
+          pnotify_text: len+" images found",
+          pnotify_delay: 2000,
+          pnotify_opacity: 0.9
+        });
+        container.html($("#imageTemplate").render(data.result));
+        $(".harvestResults").replaceWith(container);
+        downloadForm.show();
+        //$this.hide();
+      },
+      error: function(xhr) {
+        var obj = $.parseJSON(xhr.responseText);
+        $.unblockUI();
+        $.pnotify({
+          pnotify_history: false,
+          pnotify_title: "Error",
+          pnotify_text: obj.error.message,
+          pnotify_type: "error",
+          pnotify_delay: 2000,
+          pnotify_opacity: 0.9
+        });
+      }
+    });  
   });
 
-  $(document).on("change", ".harvestResults input", function(e) {
-    gotChangeEvent = true;
-    window.setTimeout(function() {
-      gotChangeEvent = false;
-    }, 200);
-    selectRow(this);
+  $("#downloadForm").livequery(function() {
+    $(this).ajaxForm({
+      dataType:"json",
+      type:"post",
+      beforeSubmit: function() {
+        $.blockUI({message:"<h1>Downloading ...</h1>"});
+        $("#messageContainer").empty().hide();
+      },
+      success: function(data) {
+        var url = foswiki.getPreference("SCRIPTURL")+"/view/"+foswiki.getPreference("WEB")+"/"+foswiki.getPreference("TOPIC");
+        $.unblockUI();
+        $.blockUI({message:"<h1>"+data.result+"</h1>"});
+        window.setTimeout(function() {
+          window.location.href = url;
+        }, 500);
+      },
+      error: function(xhr) {
+        var data = xhr.responseJSON;
+        $.unblockUI();
+        $("#messageContainer").append("<div class='foswikiErrorMessage'>Error: "+data.error.message+"</div>").show();
+        $("#downloadForm").hide();
+      }
+    });
   });
 
   $(document).on("click", ".harvestResults td", function(e) {
-    var $elem = $(this).parents('tr:first').find('input[type=checkbox]');
-    if (!gotChangeEvent) {
+    var $target = $(e.target),
+        $elem;
+
+    if ($target.is("input[type=checkbox]")) {
+      selectRow($target);
+    } else {
+      $elem = $(this).parents('tr:first').find('input[type=checkbox]');
       if ($elem.is(":checked")) {
-        $elem.removeAttr("checked");
+        $elem.prop("checked", false);
       } else {
-        $elem.attr("checked", "checked");
+        $elem.prop("checked", true);
       }
       selectRow($elem);
       return false;
@@ -99,17 +100,12 @@ jQuery(function($) {
   });
 
   function selectRow(elem) {
-    var $elem = $(elem),
-        $row = $elem.parents("tr:first"),
-        text = "selected",
-        classStr = "plus";
+    var $row = elem.parents("tr:first");
 
-    if ($elem.is(":checked")) {
+    if (elem.is(":checked")) {
       $row.addClass("selected");
     } else {
       $row.removeClass("selected");
-      text = "unselected";
-      classStr = "minus";
     }
   }
 

@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2015 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2016 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,12 +27,10 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.21';
-our $RELEASE = '1.21';
+our $VERSION = '2.00';
+our $RELEASE = '02 Sep 2016';
 our $SHORTDESCRIPTION = 'Download and archive resources from the web';
 our $NO_PREFS_IN_TOPIC = 1;
-our $baseWeb;
-our $baseTopic;
 our $core;
 
 =begin TML
@@ -42,7 +40,6 @@ our $core;
 =cut
 
 sub initPlugin {
-  ($baseTopic, $baseWeb) = @_;
 
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'analyze', sub { return getCore()->jsonRpcAnalyze(@_); });
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'attach',  sub { return getCore()->jsonRpcAttach(@_); });
@@ -86,7 +83,7 @@ sub getCore {
   
   unless (defined $core) {
     require Foswiki::Plugins::HarvestPlugin::Core;
-    $core = new Foswiki::Plugins::HarvestPlugin::Core($baseWeb, $baseTopic);
+    $core = Foswiki::Plugins::HarvestPlugin::Core->new();
   }
 
   return $core;

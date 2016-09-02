@@ -1,6 +1,6 @@
 %META:TOPICINFO{author="ProjectContributor" comment="" date="1418734826" format="1.1" version="1"}%
-
 ---+!! %TOPIC%
+%FORMFIELD{"Description"}%
 
 This plugin can be used to download and archive external resource, like images or pdfs.
 It expects an url, analyzes it and offers a menu of links to all resources reachable from that page.
@@ -21,30 +21,30 @@ have to modify your local !PatternSkin to add this tool to your site.
 <a href="%ATTACHURLPATH%/HarvestPluginSnap3.png"><img src="%ATTACHURLPATH%/HarvestPluginSnap3.png" width="100"  /></a>
 
 ---++ Installation Instructions
-
 %$INSTALL_INSTRUCTIONS%
 
----++ Info
-<!--
-   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
--->
+---++ Dependencies
+%$DEPENDENCIES%
 
-|  Author(s): | Michael Daum|
-|  Copyright: | &copy; 2012-2015 Michael Daum http://michaeldaumconsulting.com |
-|  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
-|  Release: | %$RELEASE% |
-|  Version: | %$VERSION% |
-|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+---++ Change History
+|  02 Sep 2016 | oo-ify core of plugin; work around broken mime types for images, fix encoding problems and make it work with newer <nop>JsonRpcContrib |
 |  12 Jan 2015 | sort results returned from external web page |
 |  16 Dec 2014 | ignore ssl certificate problems when downloading stuff |
 |  29 Sep 2014 | replaced deprecated jquery.tmpl with jsrendr |
 |  03 Sep 2014 | fixed corruption of downloaded files |
 |  04 Apr 2014 | flag rest handlers that don't require authentication |
 |  12 Dec 2013 | first dot.oh release |
-|  Dependencies: | %$DEPENDENCIES% |
-|  Home page: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Support/%TOPIC% |
 
 %META:FILEATTACHMENT{name="HarvestPluginSnap3.png" attachment="HarvestPluginSnap3.png" attr="" comment="" date="1418734826" size="101095" user="ProjectContributor" version="1"}%
 %META:FILEATTACHMENT{name="HarvestPluginSnap2.png" attachment="HarvestPluginSnap2.png" attr="" comment="" date="1418734826" size="51494" user="ProjectContributor" version="1"}%
 %META:FILEATTACHMENT{name="HarvestPluginSnap1.png" attachment="HarvestPluginSnap1.png" attr="" comment="" date="1418734826" size="43468" user="ProjectContributor" version="1"}%
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="&copy; 2012-2016 Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
+%META:FIELD{name="License" title="License" value="[[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]]"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/%TOPIC%"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
