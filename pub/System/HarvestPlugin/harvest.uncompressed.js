@@ -8,12 +8,12 @@ jQuery(function($) {
     if ($this.is(":checked")) {
       $this.parent().find("#selectall").hide();
       $this.parent().find("#clearall").show();
-      $(".harvestResults input").parent().parent().addClass("selected");
+      $(".harvestResults input").parent().parent().addClass("foswikiSelected");
       $(".harvestResults input").prop('checked', true);
     } else {
       $this.parent().find("#selectall").show();
       $this.parent().find("#clearall").hide();
-      $(".harvestResults input").parent().parent().removeClass('selected');
+      $(".harvestResults input").parent().parent().removeClass('foswikiSelected');
       $(".harvestResults input").prop('checked', false);
     }
   });
@@ -32,7 +32,7 @@ jQuery(function($) {
         $.unblockUI();
         $.pnotify({
           pnotify_history: false,
-          pnotify_text: len+" images found",
+          pnotify_text: len+" item(s) found",
           pnotify_delay: 2000,
           pnotify_opacity: 0.9
         });
@@ -103,9 +103,9 @@ jQuery(function($) {
     var $row = elem.parents("tr:first");
 
     if (elem.is(":checked")) {
-      $row.addClass("selected");
+      $row.addClass("foswikiSelected");
     } else {
-      $row.removeClass("selected");
+      $row.removeClass("foswikiSelected");
     }
   }
 

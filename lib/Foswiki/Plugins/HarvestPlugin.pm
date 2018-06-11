@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2016 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2018 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,8 +27,8 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '2.00';
-our $RELEASE = '02 Sep 2016';
+our $VERSION = '2.10';
+our $RELEASE = '11 Jun 2018';
 our $SHORTDESCRIPTION = 'Download and archive resources from the web';
 our $NO_PREFS_IN_TOPIC = 1;
 our $core;
@@ -45,7 +45,7 @@ sub initPlugin {
   Foswiki::Contrib::JsonRpcContrib::registerMethod('HarvestPlugin', 'attach',  sub { return getCore()->jsonRpcAttach(@_); });
 
   Foswiki::Func::registerRESTHandler('purgeCache', sub { return getCore()->purgeCache(@_); },
-    authenticate => 0,
+    authenticate => 1,
     validate => 0,
     http_allow => 'GET,POST',
   );
@@ -53,7 +53,7 @@ sub initPlugin {
   Foswiki::Func::registerRESTHandler('url2tml', sub { 
       return getCore()->restUrl2Tml(@_); 
     }, 
-    authenticate => 0,
+    authenticate => 1,
     validate => 0,
     http_allow => 'GET,POST',
   ); # TODO: convert to JsonRpcContrib

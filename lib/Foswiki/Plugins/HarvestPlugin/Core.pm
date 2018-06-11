@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2016 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2018 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -227,22 +227,19 @@ sub jsonRpcAttach {
 
   writeDebug("topic=$web.$topic");
 
-  my $selection = $request->param("selection");
+  my @selection = $request->param("selection");
 
   throw Foswiki::Contrib::JsonRpcContrib::Error(1005, "empty selection")
-    unless $selection;
+    unless @selection;
 
-  writeDebug("selection=$selection");
-  unless (ref($selection) eq 'ARRAY') {
-    $selection = [$selection];
-  }
+  writeDebug("selection=@selection");
 
-  foreach my $url (@$selection) {
+  foreach my $url (@selection) {
 
     $url = URI->new($url);
     writeDebug("url=$url");
 
-    my ($content, $contentType) = $this->getExternalResource($url);
+    my ($content, $contentType) = $this->getExternalResource($url->as_string);
     next unless $content;
 
     # SMELL: first have to write it to a temp file before being able to attach it
@@ -285,7 +282,7 @@ sub jsonRpcAttach {
     });
   }
 
-  return "Successfully downloaded ".scalar(@$selection)." item(s) to $web.$topic";
+  return "Successfully downloaded ".scalar(@selection)." item(s) to $web.$topic";
 }
 
 =begin TML
@@ -639,11 +636,9 @@ sub client {
 
     my $proxy = $Foswiki::cfg{PROXY}{HOST};
     if ($proxy) {
-      my $port = $Foswiki::cfg{PROXY}{PORT};
-      $proxy .= ':' . $port if $port;
       $ua->proxy([ 'http', 'https' ], $proxy);
 
-      my $proxySkip = $Foswiki::cfg{PROXY}{SkipProxyForDomains} || $Foswiki::cfg{PROXY}{NoProxy};
+      my $proxySkip = $Foswiki::cfg{PROXY}{NoProxy};
       if ($proxySkip) {
         my @skipDomains = split(/\s*,\s*/, $proxySkip);
         $ua->no_proxy(@skipDomains);
