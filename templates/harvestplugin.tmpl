@@ -1,24 +1,30 @@
 %TMPL:INCLUDE{"view"}%
 
 %TMPL:DEF{"titleaction"}%%MAKETEXT{"download"}%%TMPL:END%
-%TMPL:DEF{"topicactions"}%%TMPL:END%
+%TMPL:DEF{"topicactions::contents"}%%USERACTIONS{"$action(close)"}%%TMPL:END%
 %TMPL:DEF{"heading"}%<h1 >%MAKETEXT{"Download and archive external resources"}%</h1>%TMPL:END%
+%TMPL:DEF{"closebutton"}%%BUTTON{
+  "%MAKETEXT{"Close"}%" 
+  class="simple"
+  align="right"
+  href="%SCRIPTURLPATH{"view"}%/%BASEWEB%/%BASETOPIC%" 
+  icon="fa-times-circle"
+}%%TMPL:END%
 %TMPL:DEF{"breadcrumbs::tail"}%%TMPL:P{"sep"}%<a href="%SCRIPTURLPATH{"view"}%/%BASEWEB%/%BASETOPIC%?%QUERYSTRING%">%MAKETEXT{"Download"}%</a>%TMPL:END%
 %TMPL:DEF{"contentfooter"}%%TMPL:END%
 %TMPL:DEF{"banner"}%%TMPL:END%
-
 %TMPL:DEF{"content"}%<!-- -->
-%TMPL:P{"heading"}%
-%TMPL:P{"analyzeform"}%
-%TMPL:P{"downloadform"}%
-%TMPL:P{"jquerytemplates"}%
+%TMPL:P{"heading"}%%{}%
+%TMPL:P{"analyzeform"}%%{}%
+%TMPL:P{"downloadform"}%%{}%
+%TMPL:P{"jquerytemplates"}%%{}%
 %JQREQUIRE{"pnotify, blockui, form, ui, render"}%%ADDTOZONE{
   "head" 
   text="<link rel='stylesheet' href='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.css'  media='all' />" 
   id="HARVESTPLUGIN::CSS"
 }%%ADDTOZONE{
   "script"
-  text="<script type='text/javascript' src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
+  text="<script src='%PUBURLPATH%/%SYSTEMWEB%/HarvestPlugin/harvest.js'></script>"
   id="HARVESTPLUGIN::JS"
   requires="JQUERYPLUGIN::PNOTIFY, JQUERYPLUGIN::BLOCKUI, JQUERYPLUGIN::TOOLTIP, JQUERYPLUGIN::FORM, JQUERYPLUGIN::RENDER"
 }%<!-- -->%TMPL:END%

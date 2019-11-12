@@ -19,8 +19,14 @@ jQuery(function($) {
   });
 
   $("#analyzeForm").livequery(function() {
-    $(this).ajaxForm({
+    var $form = $(this);
+    $form.ajaxForm({
       dataType:"json",
+      beforeSerialize: function() {
+        if (typeof(foswikiStrikeOne) !== 'undefined') {
+          foswikiStrikeOne($form[0]);
+        }
+      },
       beforeSubmit: function() {
         $.blockUI({message:"<h1>Inspecting ...</h1>"});
         $("#messageContainer").hide();
@@ -39,7 +45,7 @@ jQuery(function($) {
         container.html($("#imageTemplate").render(data.result));
         $(".harvestResults").replaceWith(container);
         downloadForm.show();
-        //$this.hide();
+        //$form.hide();
       },
       error: function(xhr) {
         var obj = $.parseJSON(xhr.responseText);
@@ -57,9 +63,15 @@ jQuery(function($) {
   });
 
   $("#downloadForm").livequery(function() {
-    $(this).ajaxForm({
+    var $form = $(this);
+    $form.ajaxForm({
       dataType:"json",
       type:"post",
+      beforeSerialize: function() {
+        if (typeof(foswikiStrikeOne) !== 'undefined') {
+          foswikiStrikeOne($form[0]);
+        }
+      },
       beforeSubmit: function() {
         $.blockUI({message:"<h1>Downloading ...</h1>"});
         $("#messageContainer").empty().hide();

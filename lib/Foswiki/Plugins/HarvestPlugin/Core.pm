@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2018 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2019 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -255,6 +255,7 @@ sub jsonRpcAttach {
         # SMELL: just covering a few
         $baseFilename .= ".jpeg" if $baseFilename !~ /\.jpe?g$/ && $contentType eq 'image/jpeg';
         $baseFilename .= ".gif" if $baseFilename !~ /\.gif$/ && $contentType eq 'image/gif';
+        $baseFilename .= ".svg" if $baseFilename !~ /\.svg$/ && $contentType eq 'image/svg+xml';
         $baseFilename .= ".png" if $baseFilename !~ /\.png$/ && $contentType eq 'image/png';
         $baseFilename .= ".tiff" if $baseFilename !~ /\.tiff$/ && $contentType eq 'image/tiff';
         $baseFilename .= ".bmp" if $baseFilename !~ /\.bmp$/ && $contentType eq 'image/bmp';
@@ -375,7 +376,7 @@ sub crawl {
   my $baseUri;
 
   my @wantedTags = ('a', 'base');
-  push @wantedTags, 'img' if $elementType =~ /\b(image|gif|png|jpe?g|tiff|bmp)\b/i;
+  push @wantedTags, 'img' if $elementType =~ /\b(image|gif|png|jpe?g|tiff|bmp|svg|svgz)\b/i;
 
   while (my $node = $parser->get_tag(@wantedTags)) {
 
@@ -434,7 +435,15 @@ sub node2record {
 
   # img
   if ($node->[0] eq 'img') {
-    my $src = $node->[1]{src} || '';
+    my $src;
+    my $srcset = $node->[1]{srcset} || $node->[1]{"data-srcset"};
+    if ($srcset) {
+      my @list = split(/,/, $srcset);
+      $src = pop @list;
+      $src =~ s/ .*$//;
+      #writeDebug("found srcset $src");
+    }
+    $src = $node->[1]{src} || '' unless defined $src;
     $src =~ s/\?.(.*)$//; # smell
     $record = {
       title => ($node->[1]{alt} || $node->[1]{title}) || $src,
@@ -464,7 +473,7 @@ sub node2record {
       # normal link
       $type = "link";
     }
-    writeDebug("src=$src, type=$type");
+    #writeDebug("src=$src, type=$type");
 
 
     $record = {
@@ -480,7 +489,8 @@ sub node2record {
       my $ext = '';
       $ext = $1 if $src =~ /\.(\w+)(?:\?.*?)?$/;
       if ($ext) {
-        $record->{thumbnail} = Foswiki::Plugins::MimeIconPlugin::getIcon($ext, 'oxygen', 48);
+        my $theme = $Foswiki::cfg{Plugins}{MimeIconPlugin}{Theme} || 'papirus';
+        $record->{thumbnail} = Foswiki::Plugins::MimeIconPlugin::getIcon($ext, $theme, 48);
       }
     }
 
@@ -592,6 +602,12 @@ sub purgeCache {
   $this->_cache->purge;
 }
 
+sub clearCache {
+  my $this = shift;
+
+  $this->_cache->clear;
+}
+
 sub _cache_key {
   return _untaint(Digest::MD5::md5_hex($_[0]));
 }
@@ -625,7 +641,7 @@ sub client {
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new;
     #$ua->timeout(10); # TODO: make it configurable
-    $ua->agent('Mozilla/5.0 (compatible; Konqueror/4.5; Linux; X11; en_US) KHTML/4.5.5 (like Gecko) Kubuntu'); # TODO: make it configurable
+    #$ua->agent('Mozilla/5.0 (compatible; Konqueror/4.5; Linux; X11; en_US) KHTML/4.5.5 (like Gecko) Kubuntu'); # TODO: make it configurable
 
     my $attachLimit = Foswiki::Func::getPreferencesValue('ATTACHFILESIZELIMIT') || 0;
     $attachLimit =~ s/[^\d]//g;
