@@ -27,6 +27,8 @@ have to modify your local !PatternSkin to add this tool to your site.
 %$DEPENDENCIES%
 
 ---++ Change History
+%TABLE{columnwidths="7em" tablewidth="100%"}%
+|  21 Oct 2020 | reworked caching to use !CacheContrib |
 |  12 Nov 2019 | added strikeone protection to harvest UI; allow to download svgs as well; harvest image sets as required |
 |  11 Jun 2018 | added proper support for =PROXY= / =NOPROXY= network settings in Foswiki |
 |  02 Sep 2016 | oo-ify core of plugin; work around broken mime types for images, fix encoding problems and make it work with newer <nop>JsonRpcContrib |
@@ -42,7 +44,7 @@ have to modify your local !PatternSkin to add this tool to your site.
 %META:FILEATTACHMENT{name="HarvestPluginSnap1.png" attachment="HarvestPluginSnap1.png" attr="" comment="" date="1573558808" size="43468" user="ProjectContributor" version="1"}%
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Michael Daum"}%
-%META:FIELD{name="Copyright" title="Copyright" value="&copy; 2012-2019 Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Copyright" title="Copyright" value="&copy; 2012-2020 Michael Daum http://michaeldaumconsulting.com"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
 %META:FIELD{name="License" title="License" value="[[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]]"}%

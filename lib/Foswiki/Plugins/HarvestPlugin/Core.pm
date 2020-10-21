@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# HarvestPlugin is Copyright (C) 2011-2019 Michael Daum http://michaeldaumconsulting.com
+# HarvestPlugin is Copyright (C) 2011-2020 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,11 +18,11 @@ package Foswiki::Plugins::HarvestPlugin::Core;
 use strict;
 use warnings;
 use Foswiki::Contrib::JsonRpcContrib::Error ();
+use Foswiki::Contrib::CacheContrib ();
 use Foswiki::AccessControlException ();
 use Foswiki::Func ();
 use Foswiki::Sandbox ();
 use Foswiki::Plugins ();
-use Digest::MD5 ();
 use Error qw(:try);
 use URI ();
 use File::Temp ();
@@ -68,8 +68,6 @@ sub new {
   my $this = bless({
     baseWeb => $session->{webName},
     baseTopic => $session->{topicName},
-    cacheRoot => $workingDir.'/cache',
-    cacheExpire => "1 h",
     @_
   }, $class);
 
@@ -86,7 +84,6 @@ finalizer for the plugin core
 
 sub DESTROY {
   # my $this = shift;
-  # undef $this->{cache};
 }
 
 =begin TML
@@ -227,19 +224,19 @@ sub jsonRpcAttach {
 
   writeDebug("topic=$web.$topic");
 
-  my @selection = $request->param("selection");
+  my $selection = $request->param("selection");
 
   throw Foswiki::Contrib::JsonRpcContrib::Error(1005, "empty selection")
-    unless @selection;
+    unless defined($selection) && scalar(@$selection);
 
-  writeDebug("selection=@selection");
+  writeDebug("selection=@$selection");
 
-  foreach my $url (@selection) {
+  foreach my $url (@$selection) {
 
     $url = URI->new($url);
     writeDebug("url=$url");
 
-    my ($content, $contentType) = $this->getExternalResource($url->as_string);
+    my ($content, $contentType) = $this->getExternalResource($url);
     next unless $content;
 
     # SMELL: first have to write it to a temp file before being able to attach it
@@ -281,9 +278,10 @@ sub jsonRpcAttach {
       file => $tempFile,
       filesize => $size
     });
+    close $tempFile;
   }
 
-  return "Successfully downloaded ".scalar(@selection)." item(s) to $web.$topic";
+  return "Successfully downloaded ".scalar(@$selection)." item(s) to $web.$topic";
 }
 
 =begin TML
@@ -383,8 +381,8 @@ sub crawl {
     my $record = $this->node2record($node);
     next unless $record;
 
-    next if $exclude && $record->{src} =~ /$exclude/;
-    next if $include && $record->{src} !~ /$include/;
+    next if $exclude && ($record->{src} =~ /$exclude/i || $record->{title} =~ /$exclude/i);
+    next if $include && ($record->{src} !~ /$include/i && $record->{title} !~ /$include/i);
 
     $result->{$record->{src}} = $record if $record->{type} && $record->{type} =~ /$elementType/;
     $foundLinks{$record->{src}} = 1 if $depth > 0 && $record->{type} eq 'link';
@@ -438,10 +436,10 @@ sub node2record {
     my $src;
     my $srcset = $node->[1]{srcset} || $node->[1]{"data-srcset"};
     if ($srcset) {
-      my @list = split(/,/, $srcset);
+      my @list = split(/\s*,\s*/, $srcset);
       $src = pop @list;
       $src =~ s/ .*$//;
-      #writeDebug("found srcset $src");
+      writeDebug("found srcset $src");
     }
     $src = $node->[1]{src} || '' unless defined $src;
     $src =~ s/\?.(.*)$//; # smell
@@ -453,7 +451,7 @@ sub node2record {
     };
     $record->{width} = $node->[1]{width} if defined $node->[1]{width};
     $record->{height} = $node->[1]{height} if defined $node->[1]{height};
-    writeDebug("found image $src");
+    writeDebug("found image src=$src");
   }
 
   # a
@@ -553,122 +551,24 @@ sub getMimeType {
 sub getExternalResource {
   my ($this, $url) = @_;
 
-  my $cache = $this->_cache;
   my $content;
   my $contentType;
+  my $res = Foswiki::Contrib::CacheContrib::getExternalResource($url);
 
-  $url =~ s/\/$//;
+  throw Foswiki::Contrib::JsonRpcContrib::Error(1002, "error fetching url") 
+    unless $res;
 
-  if ($cache) {
-    my $bucket = $cache->get(_cache_key($url));
-    if (defined $bucket) {
-      $content = $bucket->{content};
-      $contentType = $bucket->{type};
-      writeDebug("found content for $url in cache contentType=$contentType");
-    }
+  unless ($res->is_success) {
+    writeDebug("url=$url, http error=".$res->status_line);
+    throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error fetching $url: ".$res->code." - ".$res->status_line);
   }
 
-  unless (defined $content) { 
-    my $client = $this->client;
-    my $res = $client->get($url);
-
-    throw Foswiki::Contrib::JsonRpcContrib::Error(1002, "error fetching url") 
-      unless $res;
-
-    unless ($res->is_success) {
-      writeDebug("url=$url, http error=".$res->status_line);
-      throw Foswiki::Contrib::JsonRpcContrib::Error(1004, "http error fetching $url: ".$res->code." - ".$res->status_line);
-    }
-
-    writeDebug("http status=".$res->status_line);
-
-    $content = $res->decoded_content();
-    $contentType = $res->header('Content-Type');
-    writeDebug("content type=$contentType");
-
-    if ($cache) {
-      writeDebug("caching content for $url");
-      $cache->set(_cache_key($url), {content => $content, type => $contentType});
-    }
-  }
+  $content = $res->decoded_content();
+  $contentType = $res->header('Content-Type');
+  writeDebug("content type=$contentType");
 
   return ($content, $contentType) if wantarray;
   return $content;
-}
-
-sub purgeCache {
-  my $this = shift;
-
-  $this->_cache->purge;
-}
-
-sub clearCache {
-  my $this = shift;
-
-  $this->_cache->clear;
-}
-
-sub _cache_key {
-  return _untaint(Digest::MD5::md5_hex($_[0]));
-}
-
-sub _untaint {
-  my $content = shift;
-  if (defined $content && $content =~ /^(.*)$/s) {
-    $content = $1;
-  }
-  return $content;
-}
-
-sub _cache {
-  my $this = shift;
-
-  unless (defined $this->{cache}) {
-    require Cache::FileCache;
-    $this->{cache} = Cache::FileCache->new({
-      default_expires_in => ($this->{cacheExpire} || "1 h"),
-      cache_root => $this->{cacheRoot}
-    });
-  }
-
-  return $this->{cache};
-}
-
-sub client {
-  my $this = shift;
-
-  unless (defined $this->{client}) {
-    require LWP::UserAgent;
-    my $ua = LWP::UserAgent->new;
-    #$ua->timeout(10); # TODO: make it configurable
-    #$ua->agent('Mozilla/5.0 (compatible; Konqueror/4.5; Linux; X11; en_US) KHTML/4.5.5 (like Gecko) Kubuntu'); # TODO: make it configurable
-
-    my $attachLimit = Foswiki::Func::getPreferencesValue('ATTACHFILESIZELIMIT') || 0;
-    $attachLimit =~ s/[^\d]//g;
-    if ($attachLimit) {
-      $attachLimit *= 1024;
-      $ua->max_size($attachLimit);
-    }
-
-    my $proxy = $Foswiki::cfg{PROXY}{HOST};
-    if ($proxy) {
-      $ua->proxy([ 'http', 'https' ], $proxy);
-
-      my $proxySkip = $Foswiki::cfg{PROXY}{NoProxy};
-      if ($proxySkip) {
-        my @skipDomains = split(/\s*,\s*/, $proxySkip);
-        $ua->no_proxy(@skipDomains);
-      }
-    }
-
-    $ua->ssl_opts(
-      verify_hostname => 0,    # SMELL
-    );
-
-    $this->{client} = $ua;
-  }
-
-  return $this->{client}
 }
 
 1;
